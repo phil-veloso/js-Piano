@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>JS Piano</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="piano">
+
+			<div class="pair">
+				<div data-key="65" class="key white">
+					<kbd>A</kbd>
+				</div>
+				<div data-key="87" class="key black">
+					<kbd>W</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="83" class="key white">
+					<kbd>S</kbd>
+				</div>
+				<div data-key="69" class="key black">
+					<kbd>E</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="68" class="key white">
+					<kbd>D</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="70" class="key white">
+					<kbd>F</kbd>
+				</div>
+				<div data-key="84" class="key black">
+					<kbd>T</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="71" class="key white">
+					<kbd>G</kbd>
+				</div>
+				<div data-key="89" class="key black">
+					<kbd>Y</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="72" class="key white">
+					<kbd>H</kbd>
+				</div>
+				<div data-key="85" class="key black">
+					<kbd>U</kbd>
+				</div>
+			</div>
+
+			<div class="pair">
+				<div data-key="74" class="key white">
+					<kbd>J</kbd>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="controls">
+			<button onclick="play()">Play</button>
+			<button onclick="reset()">Reset</button>
+		</div>
+
+		<div class="input">
+		</div>
+
+	</div>
+
+	<!-- Samples with thanks from : http://theremin.music.uiowa.edu/MISpiano.html  -->
+	<!-- https://www.felipefialho.com/piano/ -->
+
+	<audio data-key="65" src="notes/C3.mp3"></audio>
+	<audio data-key="87" src="notes/Db3.mp3"></audio>
+	<audio data-key="83" src="notes/D3.mp3"></audio>
+	<audio data-key="69" src="notes/Eb3.mp3"></audio>
+	<audio data-key="68" src="notes/E3.mp3"></audio>
+	<audio data-key="70" src="notes/F3.mp3"></audio>
+	<audio data-key="84" src="notes/Gb3.mp3"></audio>
+	<audio data-key="71" src="notes/G3.mp3"></audio>
+	<audio data-key="89" src="notes/Ab3.mp3"></audio>
+	<audio data-key="72" src="notes/A3.mp3"></audio>
+	<audio data-key="85" src="notes/Bb3.mp3"></audio>
+	<audio data-key="74" src="notes/B3.mp3"></audio>
+
+	<script>
+		let debug = false;
+		let data = [];
+
+		function playKey(event) {
+			const code = event.keyCode;
+			debug ? console.table(code) : null;
+			const sound = document.querySelector("audio[data-key='" + code + "']");
+			if (sound) {
+				sound.currentTime = 0;
+				sound.play();
+				record(code);
+				displayKeys(code);
+				debug ? console.table(data) : null;
+			};
+		}
+
+		function displayKeys(code) {
+			document.querySelector('.input').innerHTML += code + " ";
+		}
+
+		function record(event) {
+			const stamp = [performance.now(), event];
+			data.push(stamp);
+		}
+
+		function reset() {
+			data = [];
+			document.querySelector('.input').innerHTML = null;
+			debug ? console.clear() : null;
+		}
+
+		function play() {
+			let timer = 0;
+			for (let i in data) {
+				let value = data[i];
+				if (i > 0) {
+					let prev = data[i - 1];
+					timer = timer + (value[0] - prev[0]);
+				}
+				setTimeout(function () {
+					const sound = document.querySelector("audio[data-key='" + value[1] + "']");
+					sound.currentTime = 0;
+					sound.play();
+				}, timer);
+				debug ? console.table(value[1], timer) : null;
+			}
+		}
+
+		window.addEventListener('keydown', playKey);
+	</script>
+
+
+</body>
+
+</html>
